@@ -1,9 +1,11 @@
-Starting at https://en.wikipedia.org/wiki/Apple Inc, these are the steps to reach the Wikipedia Philosophy Webpage
-	https://en.wikipedia.org/wiki/Apple Inc
-	https://en.wikipedia.org/wiki/Multinational_corporation
-	https://en.wikipedia.org/wiki/Corporation
-	https://en.wikipedia.org/wiki/Company
-	https://en.wikipedia.org/wiki/Legal_personality
+Starting at https://en.wikipedia.org/wiki/Google, these are the steps to reach the Wikipedia Philosophy Webpage
+	https://en.wikipedia.org/wiki/Google
+	https://en.wikipedia.org/wiki/Online_advertising
+	https://en.wikipedia.org/wiki/Digital_marketing
+	https://en.wikipedia.org/wiki/Marketing
+	https://en.wikipedia.org/wiki/Management
+	https://en.wikipedia.org/wiki/Organization
+	https://en.wikipedia.org/wiki/Legal_entity
 	https://en.wikipedia.org/wiki/Person
 	https://en.wikipedia.org/wiki/Reason
 	https://en.wikipedia.org/wiki/Consciousness
@@ -22,4 +24,4 @@ Starting at https://en.wikipedia.org/wiki/Apple Inc, these are the steps to reac
 	https://en.wikipedia.org/wiki/Philosophy
 
 
-These were the 21 steps to reach the Wikipedia Philosophy Webpage
+These were the 22 steps to reach the Wikipedia Philosophy Webpage

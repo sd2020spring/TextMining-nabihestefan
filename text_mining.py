@@ -6,7 +6,6 @@ first link in the page (without counting the dismabiguations)
 28/02/2020
 @Nabih Estefan Diaz
 """
-
 import doctest
 import requests
 import sys
@@ -14,10 +13,8 @@ import os.path
 import string
 from bs4 import BeautifulSoup
 
-#soup = BeautifulSoup(html_doc, 'html.parser')
 base = 'https://en.wikipedia.org'
 philosophy = base + '/wiki/Philosophy'
-steps = [[], 0]
 
 def findFirst(link):
     """
@@ -25,18 +22,18 @@ def findFirst(link):
     Finds and returns string representaing first link in Webpage
     """
     #gets to the content part of the html where we'll find link
+
     info = BeautifulSoup(requests.get(link).text, 'html.parser')
     info = info.body.find(id="content").find(id="bodyContent")
     info = info.find(id="mw-content-text").div
     info = info.next
 
-    #check to cicle through content till we find first lnk
+    #check to cycle through content till we find first lnk
     while (info == '\n' or info.has_attr('class') or info.name == 'style'):
         info = info.next_sibling
-    print("1")
+
     """
     prints used of debugging
-
     print(link)
     print('temp')
     print(temp)
@@ -77,17 +74,11 @@ def findFirst(link):
             break
 
     newLink = base + info.a['href']
-
-
-    print("\t\t" + newLink)
-    return(newLink)
-
-
+    #print("\t\t" + newLink)
     return newLink[24:]
 
 
-
-def depth(link, file):
+def depth(link, file, steps):
     """
     Recursive method designed to reach the end of the Philosophy chain
     Base Case: checks if you are in philosophy
@@ -96,19 +87,17 @@ def depth(link, file):
     Recursive Case:
         calls findFirst which returns a string that includes the first link in
             the current Wiki page
-        uses this lin to return 1 + depth(newLink) which will eventually return
+        uses this to return 1 + depth(newLink) which will eventually return
             number of steps needed to reach philosphy
     """
     if link == philosophy:
-        steps[0].append(philosophy)
         file.write("\t" + philosophy + "\n")
-        return steps
+        return 0
     else:
         newLink = base + findFirst(link)
-        steps[0].append(link)
         file.write("\t" + link + "\n")
-        steps[1] += 1
-        return depth(newLink, file)
+        return 1 + depth(newLink, file, steps)
+
 
 def main(args=sys.argv):
     """
@@ -129,8 +118,8 @@ def main(args=sys.argv):
         #open file, write first lines, call recursive function, call final lines
         file = open(filename, "w+")
         file.write("Starting at " + link + ", these are the steps to reach the Wikipedia Philosophy Webpage\n")
-        result = depth(link, file)
-        file.write("\n\nThese were the %2d steps to reach the Wikipedia Philosophy Webpage" %result[1])
+        result = depth(link, file, 0)
+        file.write("\n\nThese were the %2d steps to reach the Wikipedia Philosophy Webpage" %result)
         file.close()
 
     #open file for read (either it was found or created)
@@ -139,10 +128,6 @@ def main(args=sys.argv):
         lines =  file.readlines()
         for line in lines:
             print(line)
-
-
-
-
 
 
 if __name__ == "__main__":
