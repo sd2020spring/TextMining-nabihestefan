@@ -1,17 +1,16 @@
 """
 Recieves a link from wikipedia (or just the title of it) and
 finds how far away it is from Philosophy by only clicking the
-first link in the page (without counting the dismabiguotions)
+first link in the page (without counting the dismabiguations)
 
-V 1.0.0
 28/02/2020
 @Nabih Estefan Diaz
 """
 
 import doctest
 import requests
-import wikipedia
 import sys
+import os.path
 import string
 from bs4 import BeautifulSoup
 
@@ -25,14 +24,16 @@ def findFirst(link):
     Recieves link to Wikipedia webpage
     Finds and returns string representaing first link in Webpage
     """
-    blank = '<p> class="mw-empty-elt"> </p>'
-    text = BeautifulSoup(requests.get(link).text, 'html.parser')
-    text = text.body.find(id="content").find(id="bodyContent")
-    text = text.find(id="mw-content-text").div
-    temp = text.next
-    while (temp == '\n' or temp.has_attr('class') or temp.name == 'style'):
-        temp = temp.next_sibling
+    #gets to the content part of the html where we'll find link
+    info = BeautifulSoup(requests.get(link).text, 'html.parser')
+    info = info.body.find(id="content").find(id="bodyContent")
+    info = info.find(id="mw-content-text").div
+    info = info.next
 
+    #check to cicle through content till we find first lnk
+    while (info == '\n' or info.has_attr('class') or info.name == 'style'):
+        info = info.next_sibling
+    print("1")
     """
     prints used of debugging
 
@@ -45,52 +46,104 @@ def findFirst(link):
     print(temp.a['href'])
     """
 
-    newLink = base + temp.a['href']
+    #Fix problem if first paragraph has no link
+    while True:
+        try:
+             newLink = base + info.a['href']
+             break
+        except TypeError:
+            info = info.next_sibling
+            while (info == '\n' or info.has_attr('class') or info.name == 'style'):
+                info = info.next_sibling
+            break
 
-    #print used for debugging
-    print(newLink)
+    #Fixed problem with coordinates Coordinates
+    while True:
+        if newLink == "https://en.wikipedia.org/wiki/Geographic_coordinate_system":
+            info = info.next_sibling
+            while (info == '\n' or info.has_attr('class') or info.name == 'style'):
+                info = info.next_sibling
+            newLink = base + info.a['href']
+        else:
+            break
 
-    return newLink
+    #Fix problem with Citations
+    while True:
+        if info.a.text == "[1]":
+            info = info.next_sibling
+            while (info == '\n' or info.has_attr('class') or info.name == 'style'):
+                info = info.next_sibling
+        else:
+            break
+
+    newLink = base + info.a['href']
+
+
+    print("\t\t" + newLink)
+    return(newLink)
+
+
+    return newLink[24:]
 
 
 
-def depth(link):
+def depth(link, file):
     """
     Recursive method designed to reach the end of the Philosophy chain
-
     Base Case: checks if you are in philosophy
         If yes returns 0, you are here, no more steps are needed
         If no goes to recursive case
-
     Recursive Case:
         calls findFirst which returns a string that includes the first link in
             the current Wiki page
         uses this lin to return 1 + depth(newLink) which will eventually return
             number of steps needed to reach philosphy
-
     """
     if link == philosophy:
         steps[0].append(philosophy)
+        file.write("\t" + philosophy + "\n")
         return steps
     else:
-        newLink = findFirst(link)
+        newLink = base + findFirst(link)
         steps[0].append(link)
+        file.write("\t" + link + "\n")
         steps[1] += 1
-        return depth(newLink)
+        return depth(newLink, file)
 
 def main(args=sys.argv):
     """
     Run the main logic of the script.
-
     Args:
         args: a link used to start the program
     """
-    link = args[1]
-    result = depth(link)
-    print("If you start at " + link + " you are %2d steps away from reaching the Wikipedia philosophy Webpage" %result[1])
-    print("The steps taken to reach this were:")
-    for i in steps[0]:
-        print("\t" + i)
+    #Find link for name given
+    name = args[1]
+    name.replace(" ", "_")
+    link = base + "/wiki/" + name
+    filename = "Philosophy Chain " + name +".txt"
+    print(filename)
+
+    #check if file already exists
+    if not os.path.isfile(filename):
+        #file was not found, we need to find the path
+        #open file, write first lines, call recursive function, call final lines
+        file = open(filename, "w+")
+        file.write("Starting at " + link + ", these are the steps to reach the Wikipedia Philosophy Webpage\n")
+        result = depth(link, file)
+        file.write("\n\nThese were the %2d steps to reach the Wikipedia Philosophy Webpage" %result[1])
+        file.close()
+
+    #open file for read (either it was found or created)
+    #print the links to the user
+    with open(filename, "r") as file:
+        lines =  file.readlines()
+        for line in lines:
+            print(line)
+
+
+
+
+
 
 if __name__ == "__main__":
     """
